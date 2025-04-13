@@ -20,7 +20,10 @@ Die Energieflüsse werden über eine **Message Queue** koordiniert, von verschie
 - **Docker**
 
 ---
+## 🔧 Component Diagram 
+![BWI-VZ-4-SS2025-DISYS-EN_154847_ 📄 Specification Semester Project _ FHTW Moodle](https://github.com/user-attachments/assets/d52f6883-d847-49b1-b7ea-389008cfb654)
 
+---
 ## 🧩 Systemkomponenten
 
 ### 1. 🏭 Community Energy Producer
