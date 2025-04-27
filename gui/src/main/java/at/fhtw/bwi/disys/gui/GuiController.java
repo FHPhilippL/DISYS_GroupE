@@ -187,6 +187,4 @@ public class GuiController {
             throw new IllegalArgumentException("Start Date is after End Date");
         }
     }
-
-
 }
