@@ -9,9 +9,7 @@ import javafx.scene.control.TextField;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -48,13 +46,23 @@ public class GuiController {
     public Label refreshErrorText;
 
     @FXML
-    public Label StartHourText;
+    public TextField StartHourInput;
+
+    @FXML
+    public TextField StartMinuteInput;
+
+    @FXML
+    public TextField EndHourInput;
+
+    @FXML
+    public TextField EndMinuteInput;
+
+    @FXML
+    public Label ShowDataErrorText;
 
     private static final Gson gson = new Gson();
-    public TextField StartHourInput;
-    public TextField StartMinuteInput;
-    public TextField EndHourInput;
-    public TextField EndMinuteInput;
+
+
 
     @FXML
     protected void onRefreshButtonClick() {
@@ -78,11 +86,13 @@ public class GuiController {
                 System.out.println("Response JSON: " + jsonResponse);
 
                 // Parse JSON into a Java object
-                ServerResponse response = gson.fromJson(jsonResponse, ServerResponse.class);
+                ServerResponseCurrent response = gson.fromJson(jsonResponse, ServerResponseCurrent.class);
 
                 // Update GUI labels
                 CommunityPoolUsageText.setText(String.format("%.2f%% used", response.communityDepleted));
                 GridPortionPercentageText.setText(String.format("%.2f%%", response.gridPortion));
+
+                refreshErrorText.setText("");
             }
        } catch (IOException e) {
            e.printStackTrace();
@@ -91,16 +101,80 @@ public class GuiController {
        }
     }
 
-    private static class ServerResponse {
+    @FXML
+    protected void onShowDataButtonClick() {
+        try{
+            String startHour = String.format("%02d", correctHour(StartHourInput));
+            String startMinute = String.format("%02d", correctMinute(StartMinuteInput));
+            String endHour = String.format("%02d", correctHour(EndHourInput));
+            String endMinute = String.format("%02d", correctMinute(EndMinuteInput));
+
+            if(StartTimeDatePicker.getValue() == null ||
+                    EndTimeDatePicker.getValue() == null){
+                throw new IllegalArgumentException("At least one Date not chosen");
+            }
+
+            String urlString = "http://localhost:8080/energy/historical?start="
+                    +StartTimeDatePicker.getValue().toString()+ "T"+startHour+":"+startMinute+":00&end="
+                    +EndTimeDatePicker.getValue().toString()+"T"+endHour+":" +endMinute+":00";
+
+            System.out.println(urlString);
+
+            final URLConnection connection = new URL(urlString).openConnection();
+            try(
+                    final InputStreamReader isr = new InputStreamReader(connection.getInputStream());
+                    final BufferedReader br = new BufferedReader(isr)
+                    ){
+                StringBuilder responseBuilder = new StringBuilder();
+                String line;
+                while ((line = br.readLine()) != null) {
+                    responseBuilder.append(line);
+                }
+
+                String jsonResponse = responseBuilder.toString();
+                System.out.println("Response JSON: " + jsonResponse);
+
+                // Parse JSON into a Java object
+                ServerResponseHistorical response = gson.fromJson(jsonResponse, ServerResponseHistorical.class);
+
+                // Update GUI labels
+                CommunityProducedText.setText(String.format("%.3f kWh", response.communityProduced));
+                CommunityUsedText.setText(String.format("%.3f kWh", response.communityUsed));
+                GridUsedText.setText(String.format("%.3f kWh", response.gridUsed));
+
+                ShowDataErrorText.setText("");
+            }
+
+        } catch(IllegalArgumentException | IOException e) {
+            e.printStackTrace();
+            ShowDataErrorText.setText("ERROR: " + e.getLocalizedMessage());
+        }
+
+    }
+
+    private static class ServerResponseCurrent {
         String hour;
         double communityDepleted;
         double gridPortion;
     }
 
+    private static class ServerResponseHistorical {
+        String hour;
+        double communityProduced;
+        double communityUsed;
+        double gridUsed;
+    }
 
-    @FXML
-    protected void onShowDataButtonClick() {
+    public int correctHour (TextField textField) {
+        int hour = Integer.parseInt(textField.getText());
+        if(hour < 0 || hour > 23) {throw new IllegalArgumentException("Not a correct hour!");}
+        return hour;
+    }
 
+    public int correctMinute (TextField textField) {
+        int minute = Integer.parseInt(textField.getText());
+        if(minute < 0 || minute > 59) {throw new IllegalArgumentException("Not a correct minute!");}
+        return minute;
     }
 
 
