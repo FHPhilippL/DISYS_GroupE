@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane prefHeight="315.0" prefWidth="371.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.fhtw.bwi.disys.gui.GuiController">
+
+    <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="157.0" minWidth="10.0" prefWidth="117.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="238.0" minWidth="10.0" prefWidth="238.0" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="1.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints />
+    </rowConstraints>
+   <children>
+      <Label prefHeight="17.0" prefWidth="93.0" text="Community Pool" />
+      <Label fx:id="CommunityPoolUsageText" GridPane.columnIndex="1" />
+      <Label text="Grid Portion" GridPane.rowIndex="1" />
+       <Label fx:id="GridPortionPercentageText" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <Button fx:id="RefreshButton" mnemonicParsing="false" onAction="#onRefreshButtonClick" text="refresh" GridPane.rowIndex="2" />
+      <Label fx:id="refreshErrorText" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+      <Label text="Start" GridPane.rowIndex="4" />
+       <HBox alignment="CENTER_LEFT" spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="4">
+           <DatePicker fx:id="StartTimeDatePicker" editable="false" prefHeight="25.0" prefWidth="140.0" />
+         <TextField fx:id="StartHourInput" prefHeight="30.0" prefWidth="35.0" promptText="hh" />
+         <Label text=":" />
+         <TextField fx:id="StartMinuteInput" prefHeight="30.0" prefWidth="35.0" promptText="mm" />
+       </HBox>
+
+      <Label text="End" GridPane.rowIndex="5" />
+       <HBox alignment="CENTER_LEFT" spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="5">
+           <DatePicker fx:id="EndTimeDatePicker" editable="false" prefHeight="25.0" prefWidth="140.0" />
+           <TextField fx:id="EndHourInput" prefHeight="30.0" prefWidth="35.0" promptText="hh" />
+           <Label text=":" />
+           <TextField fx:id="EndMinuteInput" prefHeight="30.0" prefWidth="35.0" promptText="mm" />
+       </HBox>
+
+      <Button fx:id="ShowDataButton" mnemonicParsing="false" onAction="#onShowDataButtonClick" text="show data" GridPane.rowIndex="6" />
+       <Label fx:id="ShowDataErrorText" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+
+      <Label text="Community produced" GridPane.rowIndex="7" />
+      <Label fx:id="CommunityProducedText" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+      <Label text="Community used" GridPane.rowIndex="8" />
+      <Label fx:id="CommunityUsedText" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+      <Label text="Grid used" GridPane.rowIndex="9" />
+      <Label fx:id="GridUsedText" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+
+       <Pane prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: lightgrey; -fx-border-width: 0 0 2 0;" />
+      <Pane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1"
+            style="-fx-border-color: lightgrey; -fx-border-width: 0 0 2 0;"/>
+      <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="3"
+            style="-fx-border-color: grey; -fx-border-width: 0 0 2 0;"/>
+      <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="6"
+            style="-fx-border-color: lightgrey; -fx-border-width: 0 0 2 0;"/>
+
+   </children>
+</GridPane>
