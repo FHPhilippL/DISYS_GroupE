@@ -2,6 +2,7 @@ package com.fhtw.energy.api.controller;
 
 import com.fhtw.energy.api.model.CurrentPercentage;
 import com.fhtw.energy.api.model.UsageHour;
+import com.fhtw.energy.api.model.UsageSummary;
 import com.fhtw.energy.api.service.EnergyService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +27,7 @@ public class EnergyController {
     }
 
     @GetMapping("/historical")
-    public List<UsageHour> getHistorical(
+    public UsageSummary getHistorical(
             @RequestParam("start") String start,
             @RequestParam("end") String end
     ) {
