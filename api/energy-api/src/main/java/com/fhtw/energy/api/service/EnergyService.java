@@ -3,6 +3,7 @@ package com.fhtw.energy.api.service;
 import com.fhtw.energy.api.model.CurrentPercentage;
 import com.fhtw.energy.api.model.UsageHour;
 
+import com.fhtw.energy.api.model.UsageSummary;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,17 +19,29 @@ public class EnergyService {
             new UsageHour(LocalDateTime.of(2025, 1, 10, 15, 0), 16.1, 17.4, 1.9)
     );
 
+
     private final CurrentPercentage current = new CurrentPercentage(
             LocalDateTime.of(2025, 1, 10, 14, 0),
             100.0,
             5.63
     );
 
-    public List<UsageHour> getHistorical(LocalDateTime start, LocalDateTime end) {
-        return usageData.stream()
-                .filter(u -> !u.hour.isBefore(start) && !u.hour.isAfter(end))
-                .collect(Collectors.toList());
+    public UsageSummary getHistorical(LocalDateTime start, LocalDateTime end) {
+        double totalProduced = 0;
+        double totalUsed = 0;
+        double totalGrid = 0;
+
+        for (UsageHour u : usageData) {
+            if (!u.hour.isBefore(start) && !u.hour.isAfter(end)) {
+                totalProduced += u.communityProduced;
+                totalUsed += u.communityUsed;
+                totalGrid += u.gridUsed;
+            }
     }
+
+    return new UsageSummary(totalProduced, totalUsed, totalGrid);
+    }
+
 
     public CurrentPercentage getCurrent() {
         return current;
