@@ -45,7 +45,8 @@
            <Label text=":" />
            <TextField fx:id="EndMinuteInput" prefHeight="30.0" prefWidth="35.0" promptText="mm" />
        </HBox>
-
+       <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="6"
+             style="-fx-border-color: lightgrey; -fx-border-width: 0 0 2 0;"/>
       <Button fx:id="ShowDataButton" mnemonicParsing="false" onAction="#onShowDataButtonClick" text="show data" GridPane.rowIndex="6" />
        <Label fx:id="ShowDataErrorText" GridPane.columnIndex="1" GridPane.rowIndex="6" />
 
@@ -61,8 +62,7 @@
             style="-fx-border-color: lightgrey; -fx-border-width: 0 0 2 0;"/>
       <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="3"
             style="-fx-border-color: grey; -fx-border-width: 0 0 2 0;"/>
-      <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="6"
-            style="-fx-border-color: lightgrey; -fx-border-width: 0 0 2 0;"/>
+
 
    </children>
 </GridPane>
