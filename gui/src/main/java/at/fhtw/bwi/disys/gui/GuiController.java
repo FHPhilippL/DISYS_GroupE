@@ -95,7 +95,6 @@ public class GuiController {
                 refreshErrorText.setText("");
             }
        } catch (IOException e) {
-           e.printStackTrace();
            refreshErrorText.setText("ERROR: " + e.getLocalizedMessage());
 
        }
@@ -138,15 +137,14 @@ public class GuiController {
                 ServerResponseHistorical response = gson.fromJson(jsonResponse, ServerResponseHistorical.class);
 
                 // Update GUI labels
-                CommunityProducedText.setText(String.format("%.3f kWh", response.communityProduced));
-                CommunityUsedText.setText(String.format("%.3f kWh", response.communityUsed));
-                GridUsedText.setText(String.format("%.3f kWh", response.gridUsed));
+                CommunityProducedText.setText(String.format("%.3f kWh", response.totalCommunityProduced));
+                CommunityUsedText.setText(String.format("%.3f kWh", response.totalCommunityUsed));
+                GridUsedText.setText(String.format("%.3f kWh", response.totalGridUsed));
 
                 ShowDataErrorText.setText("");
             }
 
         } catch(IllegalArgumentException | IOException e) {
-            e.printStackTrace();
             ShowDataErrorText.setText("ERROR: " + e.getLocalizedMessage());
         }
 
@@ -159,10 +157,9 @@ public class GuiController {
     }
 
     private static class ServerResponseHistorical {
-        String hour;
-        double communityProduced;
-        double communityUsed;
-        double gridUsed;
+        double totalCommunityProduced;
+        double totalCommunityUsed;
+        double totalGridUsed;
     }
 
     public int correctHour (TextField textField) {
