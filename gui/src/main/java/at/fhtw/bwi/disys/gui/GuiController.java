@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 
 public class GuiController {
 
@@ -103,15 +105,12 @@ public class GuiController {
     @FXML
     protected void onShowDataButtonClick() {
         try{
-            String startHour = String.format("%02d", correctHour(StartHourInput));
-            String startMinute = String.format("%02d", correctMinute(StartMinuteInput));
-            String endHour = String.format("%02d", correctHour(EndHourInput));
-            String endMinute = String.format("%02d", correctMinute(EndMinuteInput));
+            checkDates();
 
-            if(StartTimeDatePicker.getValue() == null ||
-                    EndTimeDatePicker.getValue() == null){
-                throw new IllegalArgumentException("At least one Date not chosen");
-            }
+            String startHour = String.format("%02d", checkHour(StartHourInput));
+            String startMinute = String.format("%02d", checkMinute(StartMinuteInput));
+            String endHour = String.format("%02d", checkHour(EndHourInput));
+            String endMinute = String.format("%02d", checkMinute(EndMinuteInput));
 
             String urlString = "http://localhost:8080/energy/historical?start="
                     +StartTimeDatePicker.getValue().toString()+ "T"+startHour+":"+startMinute+":00&end="
@@ -146,6 +145,8 @@ public class GuiController {
 
         } catch(IllegalArgumentException | IOException e) {
             ShowDataErrorText.setText("ERROR: " + e.getLocalizedMessage());
+        } catch(DateTimeParseException e){
+            ShowDataErrorText.setText("ERROR: No Proper Date Chosen");
         }
 
     }
@@ -162,16 +163,29 @@ public class GuiController {
         double totalGridUsed;
     }
 
-    public int correctHour (TextField textField) {
+    public int checkHour (TextField textField) {
         int hour = Integer.parseInt(textField.getText());
         if(hour < 0 || hour > 23) {throw new IllegalArgumentException("Not a correct hour!");}
         return hour;
     }
 
-    public int correctMinute (TextField textField) {
+    public int checkMinute (TextField textField) {
         int minute = Integer.parseInt(textField.getText());
         if(minute < 0 || minute > 59) {throw new IllegalArgumentException("Not a correct minute!");}
         return minute;
+    }
+
+    public void checkDates() {
+        if(StartTimeDatePicker.getValue() == null){
+            throw new IllegalArgumentException("Start Date not chosen");
+        }
+        if(EndTimeDatePicker.getValue() == null){
+            throw new IllegalArgumentException("End Date not chosen");
+        }
+
+        if(StartTimeDatePicker.getValue().isAfter(EndTimeDatePicker.getValue())){
+            throw new IllegalArgumentException("Start Date is after End Date");
+        }
     }
 
 

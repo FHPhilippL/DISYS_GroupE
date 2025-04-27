@@ -30,7 +30,7 @@
 
       <Label text="Start" GridPane.rowIndex="3" />
        <HBox alignment="CENTER_LEFT" spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="3">
-           <DatePicker fx:id="StartTimeDatePicker" prefHeight="25.0" prefWidth="140.0" />
+           <DatePicker fx:id="StartTimeDatePicker" editable="false" prefHeight="25.0" prefWidth="140.0" />
          <TextField fx:id="StartHourInput" prefHeight="30.0" prefWidth="35.0" promptText="hh" />
          <Label text=":" />
          <TextField fx:id="StartMinuteInput" prefHeight="30.0" prefWidth="35.0" promptText="mm" />
@@ -38,7 +38,7 @@
 
       <Label text="End" GridPane.rowIndex="4" />
        <HBox alignment="CENTER_LEFT" spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="4">
-           <DatePicker fx:id="EndTimeDatePicker" prefHeight="25.0" prefWidth="140.0" />
+           <DatePicker fx:id="EndTimeDatePicker" editable="false" prefHeight="25.0" prefWidth="140.0" />
            <TextField fx:id="EndHourInput" prefHeight="30.0" prefWidth="35.0" promptText="hh" />
            <Label text=":" />
            <TextField fx:id="EndMinuteInput" prefHeight="30.0" prefWidth="35.0" promptText="mm" />
