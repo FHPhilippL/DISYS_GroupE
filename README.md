@@ -65,7 +65,7 @@ Die Energieflüsse werden über eine **Message Queue** koordiniert, von verschie
 - Fragt die REST API ab
 
 ## 👨‍💻 Team 
-Philip Labner ||
+Philipp Labner ||
 Niklas Sterling ||
 Johannes Voraberger
 
