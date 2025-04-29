@@ -65,9 +65,14 @@ Die Energieflüsse werden über eine **Message Queue** koordiniert, von verschie
 - Fragt die REST API ab
 
 ### Team 
-Philipp Labner ||
-Niklas Sterling ||
-Johannes Voraberger
+Studentisches Entwicklerteam des FH Technikum Wiens, bestehend aus:
 
-**FHTW Wien – Bachelor Wirtschaftsinformatik**
-**Kurs: Distributed Systems – SS2025**
+- Philipp Labner
+- Johannes Voraberger
+- Niklas Sterling
+
+### Status
+Das Projekt befindet sich aktuell in der Entwicklungsphase.
+
+### Hinweise
+Dieses Projekt dient ausschließlich zu Lernzwecken im Rahmen der Lehrveranstaltung Distributed Systems SSe2025.
