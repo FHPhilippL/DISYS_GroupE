@@ -1,7 +1,6 @@
 package com.fhtw.energy.api.controller;
 
 import com.fhtw.energy.api.model.CurrentPercentage;
-import com.fhtw.energy.api.model.UsageHour;
 import com.fhtw.energy.api.model.UsageSummary;
 import com.fhtw.energy.api.service.EnergyService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,20 +9,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 @RequestMapping("/energy")
 public class EnergyController {
-    private final EnergyService service;
 
-    public EnergyController(EnergyService service) {
-        this.service = service;
+    private final EnergyService energyService;
+
+    public EnergyController(EnergyService energyService) {
+        this.energyService = energyService;
     }
 
     @GetMapping("/current")
-    public CurrentPercentage getCurrentPercentage() {
-        return service.getCurrent();
+    public CurrentPercentage getCurrent() {
+        return energyService.getCurrentPercentage();
     }
 
     @GetMapping("/historical")
@@ -31,6 +30,6 @@ public class EnergyController {
             @RequestParam("start") String start,
             @RequestParam("end") String end
     ) {
-        return service.getHistorical(LocalDateTime.parse(start), LocalDateTime.parse(end));
+        return energyService.getHistorical(LocalDateTime.parse(start), LocalDateTime.parse(end));
     }
 }
