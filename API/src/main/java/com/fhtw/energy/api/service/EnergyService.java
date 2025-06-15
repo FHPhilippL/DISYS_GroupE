@@ -1,49 +1,49 @@
 package com.fhtw.energy.api.service;
 
 import com.fhtw.energy.api.model.CurrentPercentage;
-import com.fhtw.energy.api.model.UsageHour;
 
 import com.fhtw.energy.api.model.UsageSummary;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class EnergyService {
 
-    private final List<UsageHour> usageData = List.of(
-            new UsageHour(LocalDateTime.of(2025, 1, 10, 13, 0), 15.015, 14.033, 2.049),
-            new UsageHour(LocalDateTime.of(2025, 1, 10, 14, 0), 18.05, 18.05, 1.076),
-            new UsageHour(LocalDateTime.of(2025, 1, 10, 15, 0), 16.1, 17.4, 1.9)
-    );
+    private final JdbcTemplate jdbcTemplate;
 
+    public EnergyService(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
-    private final CurrentPercentage current = new CurrentPercentage(
-            LocalDateTime.of(2025, 1, 10, 14, 0),
-            100.0,
-            5.63
-    );
+    public CurrentPercentage getCurrentPercentage() {
+        String sql = "SELECT * FROM current_percentage ORDER BY hour DESC LIMIT 1";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            CurrentPercentage cp = new CurrentPercentage();
+            cp.setHour(rs.getTimestamp("hour").toLocalDateTime());
+            cp.setCommunityDepleted(rs.getDouble("community_depleted"));
+            cp.setGridPortion(rs.getDouble("grid_portion"));
+            return cp;
+        }).stream().findFirst().orElse(null);
+    }
 
     public UsageSummary getHistorical(LocalDateTime start, LocalDateTime end) {
-        double totalProduced = 0;
-        double totalUsed = 0;
-        double totalGrid = 0;
+        String sql = """
+                SELECT 
+                    COALESCE(SUM(community_produced), 0), 
+                    COALESCE(SUM(community_used), 0), 
+                    COALESCE(SUM(grid_used), 0)
+                FROM usage_hourly
+                WHERE hour BETWEEN ? AND ?
+            """;
 
-        for (UsageHour u : usageData) {
-            if (!u.hour.isBefore(start) && !u.hour.isAfter(end)) {
-                totalProduced += u.communityProduced;
-                totalUsed += u.communityUsed;
-                totalGrid += u.gridUsed;
-            }
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) ->
+                new UsageSummary(
+                        rs.getDouble(1),
+                        rs.getDouble(2),
+                        rs.getDouble(3)
+                ), start, end);
     }
 
-    return new UsageSummary(totalProduced, totalUsed, totalGrid);
-    }
-
-
-    public CurrentPercentage getCurrent() {
-        return current;
-    }
 }
