@@ -11,6 +11,7 @@
   <modules>
     <module>GUI</module>
     <module>API</module>
+    <module>UsageService</module>
   </modules>
 
   <properties>
