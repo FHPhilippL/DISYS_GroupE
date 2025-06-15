@@ -1,0 +1,73 @@
+##################################
+# IDEs & Editors
+##################################
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+.idea/modules.xml
+.idea/jarRepositories.xml
+.idea/compiler.xml
+.idea/libraries/
+
+# VS Code
+.vscode/
+
+# Eclipse
+.classpath
+.project
+.settings/
+.apt_generated
+.factorypath
+.springBeans
+.sts4-cache
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+##################################
+# Build & Output
+##################################
+
+# Maven
+target/
+out/
+build/
+*.class
+*.jar
+*.war
+
+# Allow maven wrapper jar (for setup)
+!.mvn/wrapper/maven-wrapper.jar
+
+# Exclude false positives in `src/`
+!**/src/main/**/target/
+!**/src/test/**/target/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+##################################
+# Logs, Temp, Misc
+##################################
+
+*.log
+.DS_Store
+Thumbs.db
+HELP.md
+/httpRequests/
+shelf/
+workspace.xml
+
+##################################
+# Maven Wrapper Directory
+##################################
+
+.mvn/
+mvnw
+mvnw.cmd
