@@ -101,7 +101,7 @@ public class GuiController {
             checkDates();
 
             String startHour = String.format("%02d", checkHour(StartHourInput));
-            String endHour = String.format("%02d", checkHour(EndHourInput));
+            String endHour = String.format("%02d", checkHour(EndHourInput)-1);
 
             String urlString = "http://localhost:8080/energy/historical?start="
                     +StartTimeDatePicker.getValue().toString()+ "T"+startHour+":00:00&end="
