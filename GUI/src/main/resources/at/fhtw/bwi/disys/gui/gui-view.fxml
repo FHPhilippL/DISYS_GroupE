@@ -3,7 +3,13 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<GridPane prefHeight="315.0" prefWidth="371.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.fhtw.bwi.disys.gui.GuiController">
+<?import javafx.geometry.Insets?>
+<GridPane prefHeight="315.0" prefWidth="371.0" xmlns="http://javafx.com/javafx/17.0.12"
+          xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.fhtw.bwi.disys.gui.GuiController">
+
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
 
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" maxWidth="157.0" minWidth="10.0" prefWidth="117.0" />
@@ -27,26 +33,23 @@
       <Label fx:id="CommunityPoolUsageText" GridPane.columnIndex="1" />
       <Label text="Grid Portion" GridPane.rowIndex="1" />
        <Label fx:id="GridPortionPercentageText" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-      <Button fx:id="RefreshButton" mnemonicParsing="false" onAction="#onRefreshButtonClick" text="refresh" GridPane.rowIndex="2" />
+      <Button fx:id="RefreshButton" mnemonicParsing="false" onAction="#onRefreshButtonClick" text="refresh" GridPane.rowIndex="2"/>
       <Label fx:id="refreshErrorText" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
       <Label text="Start" GridPane.rowIndex="4" />
        <HBox alignment="CENTER_LEFT" spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="4">
            <DatePicker fx:id="StartTimeDatePicker" editable="false" prefHeight="25.0" prefWidth="140.0" />
          <TextField fx:id="StartHourInput" prefHeight="30.0" prefWidth="35.0" promptText="hh" />
-         <Label text=":" />
-         <TextField fx:id="StartMinuteInput" prefHeight="30.0" prefWidth="35.0" promptText="mm" />
+         <Label text="Uhr" />
        </HBox>
 
       <Label text="End" GridPane.rowIndex="5" />
        <HBox alignment="CENTER_LEFT" spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="5">
            <DatePicker fx:id="EndTimeDatePicker" editable="false" prefHeight="25.0" prefWidth="140.0" />
            <TextField fx:id="EndHourInput" prefHeight="30.0" prefWidth="35.0" promptText="hh" />
-           <Label text=":" />
-           <TextField fx:id="EndMinuteInput" prefHeight="30.0" prefWidth="35.0" promptText="mm" />
+           <Label text="Uhr" />
        </HBox>
-       <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="6"
-             style="-fx-border-color: lightgrey; -fx-border-width: 0 0 2 0;"/>
+       <Pane prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: lightgrey; -fx-border-width: 0 0 2 0;" GridPane.columnSpan="2" GridPane.rowIndex="6" />
       <Button fx:id="ShowDataButton" mnemonicParsing="false" onAction="#onShowDataButtonClick" text="show data" GridPane.rowIndex="6" />
        <Label fx:id="ShowDataErrorText" GridPane.columnIndex="1" GridPane.rowIndex="6" />
 
@@ -58,10 +61,8 @@
       <Label fx:id="GridUsedText" GridPane.columnIndex="1" GridPane.rowIndex="9" />
 
        <Pane prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: lightgrey; -fx-border-width: 0 0 2 0;" />
-      <Pane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1"
-            style="-fx-border-color: lightgrey; -fx-border-width: 0 0 2 0;"/>
-      <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="3"
-            style="-fx-border-color: grey; -fx-border-width: 0 0 2 0;"/>
+      <Pane prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: lightgrey; -fx-border-width: 0 0 2 0;" GridPane.rowIndex="1" />
+      <Pane prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: grey; -fx-border-width: 0 0 2 0;" GridPane.columnSpan="2" GridPane.rowIndex="3" />
 
 
    </children>

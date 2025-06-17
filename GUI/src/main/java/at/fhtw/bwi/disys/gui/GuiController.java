@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 
 public class GuiController {
@@ -51,13 +50,7 @@ public class GuiController {
     public TextField StartHourInput;
 
     @FXML
-    public TextField StartMinuteInput;
-
-    @FXML
     public TextField EndHourInput;
-
-    @FXML
-    public TextField EndMinuteInput;
 
     @FXML
     public Label ShowDataErrorText;
@@ -108,13 +101,11 @@ public class GuiController {
             checkDates();
 
             String startHour = String.format("%02d", checkHour(StartHourInput));
-            String startMinute = String.format("%02d", checkMinute(StartMinuteInput));
             String endHour = String.format("%02d", checkHour(EndHourInput));
-            String endMinute = String.format("%02d", checkMinute(EndMinuteInput));
 
             String urlString = "http://localhost:8080/energy/historical?start="
-                    +StartTimeDatePicker.getValue().toString()+ "T"+startHour+":"+startMinute+":00&end="
-                    +EndTimeDatePicker.getValue().toString()+"T"+endHour+":" +endMinute+":00";
+                    +StartTimeDatePicker.getValue().toString()+ "T"+startHour+":00:00&end="
+                    +EndTimeDatePicker.getValue().toString()+"T"+endHour+":00:00";
 
             System.out.println(urlString);
 
@@ -167,12 +158,6 @@ public class GuiController {
         int hour = Integer.parseInt(textField.getText());
         if(hour < 0 || hour > 23) {throw new IllegalArgumentException("Not a correct hour!");}
         return hour;
-    }
-
-    public int checkMinute (TextField textField) {
-        int minute = Integer.parseInt(textField.getText());
-        if(minute < 0 || minute > 59) {throw new IllegalArgumentException("Not a correct minute!");}
-        return minute;
     }
 
     public void checkDates() {
