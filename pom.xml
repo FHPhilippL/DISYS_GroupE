@@ -12,6 +12,7 @@
     <module>GUI</module>
     <module>API</module>
     <module>UsageService</module>
+    <module>CurrentPercentageService</module>
   </modules>
 
   <properties>
