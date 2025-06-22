@@ -85,22 +85,4 @@ public class WeatherAPI {
         // Return null if there was an issue reading the response
         return null;
     }
-
-    private static HttpURLConnection fetchApiResponse(String urlString){
-        try{
-            // attempt to create connection
-            URL url = new URL(urlString);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-            // set request method to get
-            conn.setRequestMethod("GET");
-
-            return conn;
-        }catch(IOException e){
-            e.printStackTrace();
-        }
-
-        // could not make connection
-        return null;
-    }
 }
