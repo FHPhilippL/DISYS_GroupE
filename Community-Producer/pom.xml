@@ -13,7 +13,6 @@
 
   <artifactId>Community-Producer</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <name>Community-Producer</name>
 
   <properties>
     <maven.compiler.source>17</maven.compiler.source>
