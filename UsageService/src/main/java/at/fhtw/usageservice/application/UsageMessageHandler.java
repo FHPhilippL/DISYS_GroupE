@@ -15,6 +15,7 @@ public class UsageMessageHandler {
 
     private final Map<String, Double> hourlyProduced = new HashMap<>();
     private final Map<String, Double> hourlyUsed = new HashMap<>();
+    private final Map<String, Double> hourlyGrid = new HashMap<>();
 
     public UsageMessageHandler(UsageRepository repository, UsageMessenger messenger) {
         this.repository = repository;
@@ -45,7 +46,11 @@ public class UsageMessageHandler {
 
         double produced = hourlyProduced.getOrDefault(hourKey, 0.0);
         double used = hourlyUsed.getOrDefault(hourKey, 0.0);
-        double grid = Math.max(0, used - produced);
+        double grid = hourlyGrid.getOrDefault(hourKey, 0.0);
+
+        double netDeficit = used - produced;
+        double updatedGrid = Math.max(grid, Math.max(0, netDeficit));
+        hourlyGrid.put(hourKey, updatedGrid);
 
         // Persist to DB
         repository.saveHourlyUsage(hour, produced, used, grid);
