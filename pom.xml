@@ -13,6 +13,8 @@
     <module>API</module>
     <module>UsageService</module>
     <module>CurrentPercentageService</module>
+    <module>Community-Producer</module>
+    <module>Community-User</module>
   </modules>
 
   <properties>
