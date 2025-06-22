@@ -101,7 +101,10 @@ public class GuiController {
             checkDates();
 
             String startHour = String.format("%02d", checkHour(StartHourInput.getText()));
-            String endHour = String.format("%02d", checkHour(EndHourInput.getText())-1);
+            String endHour;
+            if(checkHour(EndHourInput.getText())==0) endHour = String.format("%02d", 0);
+            else endHour = String.format("%02d", checkHour(EndHourInput.getText())-1);
+
 
             String urlString = "http://localhost:8080/energy/historical?start="
                     +StartTimeDatePicker.getValue().toString()+ "T"+startHour+":00:00&end="
@@ -155,8 +158,14 @@ public class GuiController {
     }
 
     public int checkHour (String textField) {
-        int hour = Integer.parseInt(textField);
-        if(hour < 0 || hour > 23) {throw new IllegalArgumentException("Not a correct hour!");}
+        if(textField.isEmpty() || textField.isBlank()) throw new IllegalArgumentException("No Hour chosen!");
+        int hour = -1;
+        try {
+            hour = Integer.parseInt(textField);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Hour must be a Number!");
+        }
+        if(hour < 0 || hour > 24) throw new IllegalArgumentException("Not a correct hour!");
         return hour;
     }
 
