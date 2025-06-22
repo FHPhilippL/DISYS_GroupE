@@ -10,4 +10,16 @@ public class UsageSummary {
         this.totalCommunityUsed = totalCommunityUsed;
         this.totalGridUsed = totalGridUsed;
     }
+
+    public double getTotalCommunityProduced() {
+        return totalCommunityProduced;
+    }
+
+    public double getTotalCommunityUsed() {
+        return totalCommunityUsed;
+    }
+
+    public double getTotalGridUsed() {
+        return totalGridUsed;
+    }
 }
