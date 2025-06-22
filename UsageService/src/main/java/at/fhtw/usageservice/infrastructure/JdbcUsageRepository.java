@@ -2,6 +2,9 @@ package at.fhtw.usageservice.infrastructure;
 
 import at.fhtw.usageservice.interfaces.UsageRepository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -11,6 +14,7 @@ import javax.sql.DataSource;
 
 public class JdbcUsageRepository implements UsageRepository {
 
+    private static final Logger logger = LoggerFactory.getLogger(JdbcUsageRepository.class);
     private final DataSource dataSource;
 
     public JdbcUsageRepository(DataSource dataSource) {
@@ -38,8 +42,7 @@ public class JdbcUsageRepository implements UsageRepository {
 
             stmt.executeUpdate();
         } catch (SQLException e) {
-            System.err.println("[!] Database error:");
-            e.printStackTrace();
+            logger.error("Failed to save hourly usage to database", e);
         }
     }
 }
