@@ -3,11 +3,14 @@ package at.fhtw.usageservice.infrastructure;
 import at.fhtw.usageservice.interfaces.UsageMessenger;
 import com.google.gson.Gson;
 import com.rabbitmq.client.Channel;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class RabbitUsageMessenger implements UsageMessenger {
+
+    private static final Logger logger = LoggerFactory.getLogger(RabbitUsageMessenger.class);
 
     private final Channel channel;
     private final String queueName;
@@ -27,10 +30,9 @@ public class RabbitUsageMessenger implements UsageMessenger {
             ));
 
             channel.basicPublish("", queueName, null, message.getBytes(StandardCharsets.UTF_8));
-            System.out.println("[→] Sent USAGE_UPDATED message to '" + queueName + "': " + message);
+            logger.info("Sent USAGE_UPDATED message to '{}': {}", queueName, message);
         } catch (Exception e) {
-            System.err.println("[!] Failed to send USAGE_UPDATED message:");
-            e.printStackTrace();
+            logger.error("Failed to send USAGE_UPDATED message", e);
         }
     }
 }

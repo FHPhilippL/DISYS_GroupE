@@ -9,12 +9,16 @@ import at.fhtw.usageservice.interfaces.UsageRepository;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.rabbitmq.client.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class UsageServiceApplication {
+
+    private static final Logger logger = LoggerFactory.getLogger(UsageServiceApplication.class);
 
     private static final String INPUT_QUEUE = "energy.input";
     private static final String UPDATE_QUEUE = "energy.updated";
@@ -47,7 +51,7 @@ public class UsageServiceApplication {
         Gson gson = new Gson();
 
         // 4. Nachrichtenkonsum starten
-        System.out.println("[✓] Waiting for messages on '" + INPUT_QUEUE + "'...");
+        logger.info("Waiting for messages on '{}'", INPUT_QUEUE);
 
         DeliverCallback callback = (tag, delivery) -> {
             String json = new String(delivery.getBody(), StandardCharsets.UTF_8);
@@ -55,8 +59,7 @@ public class UsageServiceApplication {
                 Map<String, Object> message = gson.fromJson(json, new TypeToken<Map<String, Object>>() {}.getType());
                 service.handleMessage(message);
             } catch (Exception e) {
-                System.err.println("[!] Failed to handle message:");
-                e.printStackTrace();
+                logger.error("Failed to handle message", e);
             }
         };
 

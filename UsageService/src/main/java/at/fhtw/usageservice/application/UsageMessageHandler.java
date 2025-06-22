@@ -7,11 +7,14 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UsageMessageHandler {
 
     private final UsageRepository repository;
     private final UsageMessenger messenger;
+    private static final Logger logger = LoggerFactory.getLogger(UsageMessageHandler.class);
 
     private final Map<String, Double> hourlyProduced = new HashMap<>();
     private final Map<String, Double> hourlyUsed = new HashMap<>();
@@ -27,7 +30,7 @@ public class UsageMessageHandler {
         String association = (String) message.get("association");
 
         if (!"COMMUNITY".equalsIgnoreCase(association)) {
-            System.out.println("[!] Ignoring message with non-community association.");
+            logger.warn("Ignoring message with non-community association: {}", association);
             return;
         }
 
@@ -58,7 +61,11 @@ public class UsageMessageHandler {
         // Notify via MQ
         messenger.sendUsageUpdated(hourKey);
 
-        System.out.printf("[✓] %s → %.3f kWh → Hour: %s | Produced=%.3f Used=%.3f Grid=%.3f%n",
-                type, kwh, hourKey, produced, used, grid);
+        logger.info("{} → {} kWh → Hour: {} | Produced={} Used={} Grid={}",
+                type, String.format("%.3f", kwh), hourKey,
+                String.format("%.3f", produced),
+                String.format("%.3f", used),
+                String.format("%.3f", grid));
     }
+
 }
