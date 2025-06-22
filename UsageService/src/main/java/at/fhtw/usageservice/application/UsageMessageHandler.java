@@ -54,6 +54,7 @@ public class UsageMessageHandler {
         double netDeficit = used - produced;
         double updatedGrid = Math.max(grid, Math.max(0, netDeficit));
         hourlyGrid.put(hourKey, updatedGrid);
+        grid = hourlyGrid.getOrDefault(hourKey, 0.0);
 
         // Persist to DB
         repository.saveHourlyUsage(hour, produced, used, grid);

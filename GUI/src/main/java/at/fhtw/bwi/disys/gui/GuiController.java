@@ -10,8 +10,10 @@ import javafx.scene.control.TextField;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
 public class GuiController {
@@ -65,12 +67,7 @@ public class GuiController {
             String urlString = "http://localhost:8080/energy/current";
             System.out.println(urlString);
 
-            final URLConnection connection = new URL(urlString).openConnection();
-            try (
-                    final InputStreamReader isr = new InputStreamReader(connection.getInputStream());
-                    final BufferedReader br = new BufferedReader(isr)
-
-            ){
+            try (BufferedReader br = new BufferedReader(getReaderFromUrl(urlString))){
                 StringBuilder responseBuilder = new StringBuilder();
                 String line;
                 while ((line = br.readLine()) != null) {
@@ -98,22 +95,23 @@ public class GuiController {
     @FXML
     protected void onShowDataButtonClick() {
         try{
-            checkDates();
+            LocalDate startDate = StartTimeDatePicker.getValue();
+            LocalDate endDate = EndTimeDatePicker.getValue();
+            checkDates(startDate, endDate);
 
-            String startHour = String.format("%02d", checkHour(StartHourInput));
-            String endHour = String.format("%02d", checkHour(EndHourInput)-1);
+            String startHour = String.format("%02d", checkHour(StartHourInput.getText()));
+            String endHour;
+            if(checkHour(EndHourInput.getText())==0) endHour = String.format("%02d", 0);
+            else endHour = String.format("%02d", checkHour(EndHourInput.getText())-1);
+
 
             String urlString = "http://localhost:8080/energy/historical?start="
-                    +StartTimeDatePicker.getValue().toString()+ "T"+startHour+":00:00&end="
-                    +EndTimeDatePicker.getValue().toString()+"T"+endHour+":00:00";
+                    +startDate.toString()+ "T"+startHour+":00:00&end="
+                    +endDate.toString()+"T"+endHour+":00:00";
 
             System.out.println(urlString);
 
-            final URLConnection connection = new URL(urlString).openConnection();
-            try(
-                    final InputStreamReader isr = new InputStreamReader(connection.getInputStream());
-                    final BufferedReader br = new BufferedReader(isr)
-                    ){
+            try(BufferedReader br = new BufferedReader(getReaderFromUrl(urlString))){
                 StringBuilder responseBuilder = new StringBuilder();
                 String line;
                 while ((line = br.readLine()) != null) {
@@ -139,9 +137,11 @@ public class GuiController {
         } catch(DateTimeParseException e){
             ShowDataErrorText.setText("ERROR: No Proper Date Chosen");
         }
-
     }
 
+    protected Reader getReaderFromUrl(String urlString) throws IOException {
+        return new InputStreamReader(new URL(urlString).openConnection().getInputStream());
+    }
     private static class ServerResponseCurrent {
         String hour;
         double communityDepleted;
@@ -154,21 +154,27 @@ public class GuiController {
         double totalGridUsed;
     }
 
-    public int checkHour (TextField textField) {
-        int hour = Integer.parseInt(textField.getText());
-        if(hour < 0 || hour > 23) {throw new IllegalArgumentException("Not a correct hour!");}
+    public int checkHour (String textField) {
+        if(textField == null || textField.isEmpty() || textField.isBlank()) throw new IllegalArgumentException("No Hour chosen!");
+        int hour = -1;
+        try {
+            hour = Integer.parseInt(textField);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Hour must be a Number!");
+        }
+        if(hour < 0 || hour > 24) throw new IllegalArgumentException("Not a correct hour!");
         return hour;
     }
 
-    public void checkDates() {
-        if(StartTimeDatePicker.getValue() == null){
+    public void checkDates(LocalDate startDate, LocalDate endDate) {
+        if(startDate == null){
             throw new IllegalArgumentException("Start Date not chosen");
         }
-        if(EndTimeDatePicker.getValue() == null){
+        if(endDate == null){
             throw new IllegalArgumentException("End Date not chosen");
         }
 
-        if(StartTimeDatePicker.getValue().isAfter(EndTimeDatePicker.getValue())){
+        if(startDate.isAfter(endDate)){
             throw new IllegalArgumentException("Start Date is after End Date");
         }
     }
