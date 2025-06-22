@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
 public class GuiController {
@@ -98,7 +99,9 @@ public class GuiController {
     @FXML
     protected void onShowDataButtonClick() {
         try{
-            checkDates();
+            LocalDate startDate = StartTimeDatePicker.getValue();
+            LocalDate endDate = EndTimeDatePicker.getValue();
+            checkDates(startDate, endDate);
 
             String startHour = String.format("%02d", checkHour(StartHourInput.getText()));
             String endHour;
@@ -107,8 +110,8 @@ public class GuiController {
 
 
             String urlString = "http://localhost:8080/energy/historical?start="
-                    +StartTimeDatePicker.getValue().toString()+ "T"+startHour+":00:00&end="
-                    +EndTimeDatePicker.getValue().toString()+"T"+endHour+":00:00";
+                    +startDate.toString()+ "T"+startHour+":00:00&end="
+                    +endDate.toString()+"T"+endHour+":00:00";
 
             System.out.println(urlString);
 
@@ -169,15 +172,15 @@ public class GuiController {
         return hour;
     }
 
-    public void checkDates() {
-        if(StartTimeDatePicker.getValue() == null){
+    public void checkDates(LocalDate startDate, LocalDate endDate) {
+        if(startDate == null){
             throw new IllegalArgumentException("Start Date not chosen");
         }
-        if(EndTimeDatePicker.getValue() == null){
+        if(endDate == null){
             throw new IllegalArgumentException("End Date not chosen");
         }
 
-        if(StartTimeDatePicker.getValue().isAfter(EndTimeDatePicker.getValue())){
+        if(startDate.isAfter(endDate)){
             throw new IllegalArgumentException("Start Date is after End Date");
         }
     }
