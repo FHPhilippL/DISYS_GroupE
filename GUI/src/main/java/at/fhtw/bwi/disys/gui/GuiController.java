@@ -158,7 +158,7 @@ public class GuiController {
     }
 
     public int checkHour (String textField) {
-        if(textField.isEmpty() || textField.isBlank()) throw new IllegalArgumentException("No Hour chosen!");
+        if(textField == null || textField.isEmpty() || textField.isBlank()) throw new IllegalArgumentException("No Hour chosen!");
         int hour = -1;
         try {
             hour = Integer.parseInt(textField);
