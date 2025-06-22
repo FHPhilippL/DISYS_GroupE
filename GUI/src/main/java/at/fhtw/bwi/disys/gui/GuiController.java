@@ -85,7 +85,7 @@ public class GuiController {
 
                 // Update GUI labels
                 CommunityPoolUsageText.setText(String.format("%.2f%% used", response.communityDepleted));
-                GridPortionPercentageText.setText(String.format("%.2f%%", response.gridPortion));
+                GridPortionPercentageText.setText(String.format("%.2f%% of total Usage", response.gridPortion));
 
                 refreshErrorText.setText("");
             }
