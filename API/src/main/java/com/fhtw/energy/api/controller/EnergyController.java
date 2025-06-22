@@ -3,6 +3,7 @@ package com.fhtw.energy.api.controller;
 import com.fhtw.energy.api.model.CurrentPercentage;
 import com.fhtw.energy.api.model.UsageSummary;
 import com.fhtw.energy.api.service.EnergyService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,9 +28,9 @@ public class EnergyController {
 
     @GetMapping("/historical")
     public UsageSummary getHistorical(
-            @RequestParam("start") String start,
-            @RequestParam("end") String end
+            @RequestParam("start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
+            @RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end
     ) {
-        return energyService.getHistorical(LocalDateTime.parse(start), LocalDateTime.parse(end));
+        return energyService.getHistorical(start, end);
     }
 }
