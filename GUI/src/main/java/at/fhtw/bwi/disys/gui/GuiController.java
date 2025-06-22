@@ -100,8 +100,8 @@ public class GuiController {
         try{
             checkDates();
 
-            String startHour = String.format("%02d", checkHour(StartHourInput));
-            String endHour = String.format("%02d", checkHour(EndHourInput)-1);
+            String startHour = String.format("%02d", checkHour(StartHourInput.getText()));
+            String endHour = String.format("%02d", checkHour(EndHourInput.getText())-1);
 
             String urlString = "http://localhost:8080/energy/historical?start="
                     +StartTimeDatePicker.getValue().toString()+ "T"+startHour+":00:00&end="
@@ -154,8 +154,8 @@ public class GuiController {
         double totalGridUsed;
     }
 
-    public int checkHour (TextField textField) {
-        int hour = Integer.parseInt(textField.getText());
+    public int checkHour (String textField) {
+        int hour = Integer.parseInt(textField);
         if(hour < 0 || hour > 23) {throw new IllegalArgumentException("Not a correct hour!");}
         return hour;
     }
