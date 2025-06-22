@@ -6,7 +6,6 @@ import com.rabbitmq.client.*;
 import com.rabbitmq.client.Connection;
 
 import java.nio.charset.StandardCharsets;
-import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -20,6 +19,7 @@ public class CurrentPercentageService {
     private static final Gson gson = new Gson();
 
     public static void main(String[] args) throws Exception {
+        PercentageCalculator calculator= new PercentageCalculator(DB_URL, DB_USER, DB_PASS);
 
         // RabbitMQ Setup
         ConnectionFactory factory = new ConnectionFactory();
@@ -41,7 +41,7 @@ public class CurrentPercentageService {
                 Map<String, Object> message = gson.fromJson(messageJson, new TypeToken<Map<String, Object>>() {}.getType());
                 if ("USAGE_UPDATED".equals(message.get("type"))) {
                     String hourStr = (String) message.get("hour");
-                    handleUpdate(LocalDateTime.parse(hourStr));
+                    calculator.handleUpdate(LocalDateTime.parse(hourStr));
                 }
             } catch (Exception e) {
                 System.err.println("[!] Error while processing message:");
@@ -50,46 +50,5 @@ public class CurrentPercentageService {
         };
 
         channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {});
-    }
-
-    private static void handleUpdate(LocalDateTime hour) {
-        try (java.sql.Connection db = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS)) {
-            PreparedStatement query = db.prepareStatement(
-                    "SELECT community_produced, community_used, grid_used FROM usage_hourly WHERE hour = ?"
-            );
-            query.setTimestamp(1, Timestamp.valueOf(hour));
-            ResultSet rs = query.executeQuery();
-
-            if (rs.next()) {
-                double communityProduced = rs.getDouble("community_produced");
-                double communityUsed = rs.getDouble("community_used");
-                double gridUsed = rs.getDouble("grid_used");
-                double totalUsed = communityUsed + gridUsed;
-
-                double communityDepleted = (communityProduced > 0) ? (communityUsed<=communityProduced) ?
-                        (communityUsed/communityProduced) * 100 : 100 : 0;
-                double gridPortion = (totalUsed > 0) ? (gridUsed / totalUsed) * 100 : 0;
-
-                PreparedStatement update = db.prepareStatement(
-                        "INSERT INTO current_percentage (hour, community_depleted, grid_portion) " +
-                                "VALUES (?, ?, ?) " +
-                                "ON CONFLICT (hour) DO UPDATE SET " +
-                                "community_depleted = EXCLUDED.community_depleted, " +
-                                "grid_portion = EXCLUDED.grid_portion"
-                );
-                update.setTimestamp(1, Timestamp.valueOf(hour));
-                update.setDouble(2, communityDepleted);
-                update.setDouble(3, gridPortion);
-                update.executeUpdate();
-
-                System.out.printf("[✓] Calculated percentage for %s → Grid: %.2f%%%n", hour, gridPortion);
-            } else {
-                System.out.println("[!] No usage data found for hour: " + hour);
-            }
-
-        } catch (SQLException e) {
-            System.err.println("[!] Database error:");
-            e.printStackTrace();
-        }
     }
 }
