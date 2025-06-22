@@ -10,6 +10,7 @@ import javafx.scene.control.TextField;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.time.LocalDate;
@@ -66,12 +67,7 @@ public class GuiController {
             String urlString = "http://localhost:8080/energy/current";
             System.out.println(urlString);
 
-            final URLConnection connection = new URL(urlString).openConnection();
-            try (
-                    final InputStreamReader isr = new InputStreamReader(connection.getInputStream());
-                    final BufferedReader br = new BufferedReader(isr)
-
-            ){
+            try (BufferedReader br = new BufferedReader(getReaderFromUrl(urlString))){
                 StringBuilder responseBuilder = new StringBuilder();
                 String line;
                 while ((line = br.readLine()) != null) {
@@ -115,11 +111,7 @@ public class GuiController {
 
             System.out.println(urlString);
 
-            final URLConnection connection = new URL(urlString).openConnection();
-            try(
-                    final InputStreamReader isr = new InputStreamReader(connection.getInputStream());
-                    final BufferedReader br = new BufferedReader(isr)
-                    ){
+            try(BufferedReader br = new BufferedReader(getReaderFromUrl(urlString))){
                 StringBuilder responseBuilder = new StringBuilder();
                 String line;
                 while ((line = br.readLine()) != null) {
@@ -145,9 +137,11 @@ public class GuiController {
         } catch(DateTimeParseException e){
             ShowDataErrorText.setText("ERROR: No Proper Date Chosen");
         }
-
     }
 
+    protected Reader getReaderFromUrl(String urlString) throws IOException {
+        return new InputStreamReader(new URL(urlString).openConnection().getInputStream());
+    }
     private static class ServerResponseCurrent {
         String hour;
         double communityDepleted;
