@@ -60,11 +60,14 @@ public class GuiController {
     private static final Gson gson = new Gson();
 
 
-
+    /**
+     * Methode when the Button "Refresh" is clicked
+     * Gets Data from the Server and inputs them into the corresponding labels.
+     */
     @FXML
     protected void onRefreshButtonClick() {
        try{
-            String urlString = "http://localhost:8080/energy/current";
+            String urlString = "http://localhost:8080/energy/current"; // sets URL
             System.out.println(urlString);
 
             try (BufferedReader br = new BufferedReader(getReaderFromUrl(urlString))){
@@ -92,6 +95,11 @@ public class GuiController {
        }
     }
 
+    /**
+     * Methode when the Button "Show Data" is clicked
+     * Sets the chosen Date and Hour and checks them by calling other methods.
+     * Gets Data from the Server and inputs them into the corresponding labels.
+     */
     @FXML
     protected void onShowDataButtonClick() {
         try{
@@ -139,21 +147,45 @@ public class GuiController {
         }
     }
 
+    /**
+     * Generates a New InputStreamReader to read the Json Messages
+     * Seperated from the Methods, so a Mock test can be used
+     * @param urlString the Url, with which the data is being received
+     * @return the generated Reader
+     * @throws IOException when the Connection cannot be build
+     */
     protected Reader getReaderFromUrl(String urlString) throws IOException {
         return new InputStreamReader(new URL(urlString).openConnection().getInputStream());
     }
+
+    /**
+     * Class where the Data Read from the Server is being saved.
+     * This Class saves the current percentage.
+     */
     private static class ServerResponseCurrent {
         String hour;
         double communityDepleted;
         double gridPortion;
     }
 
+    /**
+     * Class where the Data Read from the Server is being saved.
+     * This Class saves the total Usage in a given timeframe.
+     */
     private static class ServerResponseHistorical {
         double totalCommunityProduced;
         double totalCommunityUsed;
         double totalGridUsed;
     }
 
+
+    /**
+     * Checks if the hour inputted in the GUI is of a correct format.
+     * The Hour can only be between 0 and 24
+     * @param textField the chosen hour
+     * @return the hour if it is valid
+     * @throws IllegalArgumentException when the hour is not valid
+     */
     public int checkHour (String textField) {
         if(textField == null || textField.isEmpty() || textField.isBlank()) throw new IllegalArgumentException("No Hour chosen!");
         int hour = -1;
@@ -166,6 +198,14 @@ public class GuiController {
         return hour;
     }
 
+    /**
+     * checks if the Dates chosen are valid
+     * For a Date to be valid, it needs to be not null.
+     * The End Date is also not allowed to be after the Start Date
+     * @param startDate the chosen start Date
+     * @param endDate the chosen End Date
+     * @throws IllegalArgumentException when Date is Null or End Date is before Start Date
+     */
     public void checkDates(LocalDate startDate, LocalDate endDate) {
         if(startDate == null){
             throw new IllegalArgumentException("Start Date not chosen");
