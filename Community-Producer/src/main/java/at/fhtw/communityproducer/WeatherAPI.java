@@ -7,14 +7,29 @@ import org.json.simple.parser.JSONParser;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.Scanner;
 
 public class WeatherAPI {
     private static final String API_KEY = "078c9d4925b2cffaea94e61b8f2b2ad6";
     private static final String CITY = "Vienna";
-    //OpenWeatherMapClient openWeatherClient = new OpenWeatherMapClient("b51c69604385f4b7cdc3155e6d12fa33");
 
-    public static double getSunlightFactor() throws Exception {
+    private static double cachedSunlightFactor = 0.3;
+    private static LocalDateTime lastFetchTime = null;
+
+    public static double getSunlightFactor() {
+        LocalDateTime now = LocalDateTime.now();
+
+        // Check if we need to refresh (older than 10 minutes or never fetched)
+        if (lastFetchTime == null || lastFetchTime.plusMinutes(10).isBefore(now)) {
+            cachedSunlightFactor = getNewSunlightFactor();
+            lastFetchTime = now;
+        }
+
+        return cachedSunlightFactor;
+    }
+
+    public static double getNewSunlightFactor() {
         String url = String.format(
                 "https://api.openweathermap.org/data/2.5/weather?q=%s&appid=%s",
                 CITY, API_KEY

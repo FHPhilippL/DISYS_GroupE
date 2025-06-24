@@ -56,7 +56,7 @@ public class CommunityProducer {
         LocalTime now = LocalTime.now();
         LocalTime sunrise = LocalTime.of(6, 0);
         LocalTime sunset = LocalTime.of(20, 0);
-        double timeOfDayFactor;
+        //double timeOfDayFactor;
 
         if (now.isBefore(sunrise) || now.isAfter(sunset)) {
             return 0.0; // no production at night
