@@ -15,6 +15,13 @@ public class PercentageCalculator {
         PercentageCalculator.dbPass = dbPass;
     }
 
+    /**
+     * Receives new Data from the Server
+     * Receives Community produced, Community Used and Grid Used
+     * Calculates Community Depleted and Grid Portion
+     * sends a new Query with Community Depleted and Grid Portion
+     * @param hour the current hour
+     */
     public void handleUpdate(LocalDateTime hour) {
         try (Connection db = DriverManager.getConnection(dbUrl, dbUser, dbPass)) {
             PreparedStatement query = db.prepareStatement(
@@ -27,7 +34,6 @@ public class PercentageCalculator {
                 double communityProduced = rs.getDouble("community_produced");
                 double communityUsed = rs.getDouble("community_used");
                 double gridUsed = rs.getDouble("grid_used");
-                //double totalUsed = communityUsed + gridUsed;
 
                 double communityDepleted = (communityProduced > 0)
                         ? Math.min(100, (communityUsed / communityProduced) * 100)
