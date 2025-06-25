@@ -75,7 +75,7 @@ public class CommunityUser {
         LocalTime eveningPeakEnd = LocalTime.of(21, 0);
 
         if (now.isBefore(LocalTime.of(5, 0)) || now.isAfter(LocalTime.of(23, 0))) {
-            return 0.0005; // Almost no usage late at night, but still some
+            return 0.00015; // Almost no usage late at night, but still some
         }
 
         // Determine time-based usage factor
@@ -91,8 +91,8 @@ public class CommunityUser {
         logger.debug("timeOfDayFactor: " + timeOfDayFactor);
 
         // Define base and range for user consumption
-        double base = 0.002;     // base minimal usage
-        double range = 0.004;    // max variability
+        double base = 0.001;     // base minimal usage
+        double range = 0.002;    // max variability
 
         double kwh = base + (RANDOM.nextDouble() * range * timeOfDayFactor);
         logger.debug("User kWh usage: " + kwh);
