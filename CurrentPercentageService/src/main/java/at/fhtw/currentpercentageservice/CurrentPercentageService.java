@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.rabbitmq.client.*;
 import com.rabbitmq.client.Connection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -13,6 +15,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeoutException;
 
 public class CurrentPercentageService {
+
+    private static final Logger logger = LoggerFactory.getLogger(CurrentPercentageService.class);
 
     private static final String QUEUE_NAME = "energy.updated";
     private static final String DB_URL = "jdbc:postgresql://localhost:5432/energy";
@@ -32,21 +36,27 @@ public class CurrentPercentageService {
 
         Channel channel = null;
 
+        //trys to connect to the RabbitMQ, fails if the docker container is not started
         try{
             Connection mqConnection = factory.newConnection();
             channel = mqConnection.createChannel();
-        } catch (IOException e) {
-            System.err.println("Could not connect to RabbitMQ");
-            e.printStackTrace();
+        } catch (IOException | TimeoutException e) {
+            logger.error("Could not connect to RabbitMQ: {}", e.getMessage());
+        }
+
+        // if the container has not been created, stops the programm
+        if (channel == null) {
+            logger.error("Channel not created");
+            return;
         }
 
 
         channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-        System.out.println("[i] Waiting for USAGE_UPDATED messages on queue '" + QUEUE_NAME + "'...");
+        logger.info("[i] Waiting for USAGE_UPDATED messages on queue '" + QUEUE_NAME + "'...");
 
         DeliverCallback deliverCallback = (consumerTag, delivery) -> {
             String messageJson = new String(delivery.getBody(), StandardCharsets.UTF_8);
-            System.out.println("[→] Received USAGE_UPDATED message: " + messageJson);
+            logger.info("[→] Received USAGE_UPDATED message: {}",  messageJson);
 
             try {
                 Map<String, Object> message = gson.fromJson(messageJson, new TypeToken<Map<String, Object>>() {}.getType());
@@ -55,8 +65,7 @@ public class CurrentPercentageService {
                     calculator.handleUpdate(LocalDateTime.parse(hourStr));
                 }
             } catch (Exception e) {
-                System.err.println("[!] Error while processing message:");
-                e.printStackTrace();
+                logger.error("[!] Error while processing message: {}", e.getMessage());
             }
         };
 
