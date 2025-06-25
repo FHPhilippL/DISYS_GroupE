@@ -1,0 +1,33 @@
+@startuml name
+skinparam componentStyle rectangle
+skinparam linetype ortho
+
+' Definition der Module als Komponenten
+component "Community Producer\n(Java Service)" as Producer #CCE5FF
+component "Community User\n(Java Service)" as User #CCE5FF
+
+queue "RabbitMQ\nMessage Queue" as MQ 	#E0E0E0
+
+component "Usage Service\n(Java Service)" as UsageService #D0F0C0
+database "EnergyCommunityDB\n(PostgreSQL)" as DB #FFE4E1
+
+component "Current Percentage Service\n(Java Service)" as CPS #D0F0C0
+
+component "Energy API\n(Spring Boot)" as API #FFFACD
+component "JavaFX GUI\n(Client)" as GUI #F0E68C
+
+' Beziehungen / Nachrichtenfluss
+Producer ---> MQ : PRODUCER\n messages
+User ---> MQ : USER\n messages
+
+MQ ---> UsageService : consumes \n messages
+UsageService ---> MQ : \n\nupdate \n message
+MQ ---> CPS : update\n message
+UsageService --> DB : INSERT\n into usage_hourly
+
+
+CPS ---> DB : INSERT\n into \ncurrent_percentage
+
+API --> DB : \n   SELECT current_percentage\nSELECT usage_hourly
+GUI ---> API : HTTP GET /energy/current\nHTTP GET /energy/historical*\nHTTP GET /energy/historical-detailed*
+@enduml
