@@ -61,7 +61,7 @@ Die Energieflüsse werden über eine **Message Queue** koordiniert, von verschie
 #### 6. JavaFX GUI
 - Visualisiert Energieverteilung:
   - Aktueller Grid-/Community-Anteil
-  - Historischer Verlauf (z. B. Charts, Tabellen)
+  - Historischer Verlauf (z.B. Charts, Tabellen)
 - Fragt die REST API ab
 
 ### Team 

@@ -2,11 +2,13 @@ package com.fhtw.energy.api.service;
 
 import com.fhtw.energy.api.model.CurrentPercentage;
 
+import com.fhtw.energy.api.model.HourlyUsage;
 import com.fhtw.energy.api.model.UsageSummary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class EnergyService {
@@ -44,6 +46,21 @@ public class EnergyService {
                         rs.getDouble(2),
                         rs.getDouble(3)
                 ), start, end);
+    }
+
+    public List<HourlyUsage> getHistoricalDetailed(LocalDateTime start, LocalDateTime end) {
+        String sql = """
+        SELECT hour, community_produced, community_used
+        FROM usage_hourly
+        WHERE hour BETWEEN ? AND ?
+        ORDER BY hour
+    """;
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new HourlyUsage(
+                rs.getTimestamp("hour").toLocalDateTime(),
+                rs.getDouble("community_produced"),
+                rs.getDouble("community_used")
+        ), start, end);
     }
 
 }
