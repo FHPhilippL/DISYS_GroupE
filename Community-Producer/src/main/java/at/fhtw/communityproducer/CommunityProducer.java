@@ -9,8 +9,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadLocalRandom;
@@ -64,17 +62,13 @@ public class CommunityProducer {
     }
 
     public static double calculateKWh() throws Exception {
-        LocalTime now = LocalTime.now();
-        LocalTime sunrise = LocalTime.of(6, 0);
-        LocalTime sunset = LocalTime.of(20, 0);
-        //double timeOfDayFactor;
+        WeatherAPI weatherAPI = new WeatherAPI();
+        double sunlight = weatherAPI.getSunlightFactor();
 
-        if (now.isBefore(sunrise) || now.isAfter(sunset)) {
+        if (WeatherAPI.isSunShining()) {
             return 0.0; // no production at night
         }
 
-        WeatherAPI weatherAPI = new WeatherAPI();
-        double sunlight = weatherAPI.getSunlightFactor();
         //System.out.println("sunlight: " + sunlight);
 
         // Combine both factors with randomness
