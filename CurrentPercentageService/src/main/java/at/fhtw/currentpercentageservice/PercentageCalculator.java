@@ -1,9 +1,14 @@
 package at.fhtw.currentpercentageservice;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.*;
 import java.time.LocalDateTime;
 
 public class PercentageCalculator {
+
+    private static final Logger logger = LoggerFactory.getLogger(PercentageCalculator.class);
 
     private static String dbUrl;
     private static String dbUser;
@@ -52,14 +57,16 @@ public class PercentageCalculator {
                 update.setDouble(3, gridPortion);
                 update.executeUpdate();
 
-                System.out.printf("[✓] Calculated percentage for %s → Grid: %.2f%%%n", hour, gridPortion);
+                logger.info("[✓] Calculated percentage for {} → Grid: {}",
+                        String.format("%s", hour),
+                        String.format("%.2f%%%n", gridPortion));
             } else {
-                System.out.println("[!] No usage data found for hour: " + hour);
+                logger.warn("[!] No usage data found for hour: {}",  hour);
             }
 
         } catch (SQLException e) {
-            System.err.println("[!] Database error:");
-            e.printStackTrace();
+            logger.error("[!] Database error: {}", e.getMessage());
+
         }
     }
 
