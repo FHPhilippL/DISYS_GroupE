@@ -4,6 +4,9 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -13,6 +16,9 @@ import java.time.ZoneId;
 import java.util.Scanner;
 
 public class WeatherAPI {
+
+    private static final Logger logger = LoggerFactory.getLogger(CommunityProducer.class);
+
     private static final String API_KEY = "078c9d4925b2cffaea94e61b8f2b2ad6";
     private static final String CITY = "Vienna";
 
@@ -22,10 +28,6 @@ public class WeatherAPI {
     private static LocalTime sunriseTime = null;
     private static LocalTime sunsetTime = null;
 
-    public WeatherAPI() {
-        getWeatherData();
-    }
-
     public static double getSunlightFactor() {
         LocalTime now = LocalTime.now();
 
@@ -34,8 +36,7 @@ public class WeatherAPI {
         if (lastFetchTime == null || lastFetchTime.plusMinutes(10).isBefore(now)) {
             getWeatherData();
             lastFetchTime = now;
-            System.out.println("New API-Data fetched at " + lastFetchTime);
-            return sunlightFactor;
+            logger.info("[i] New API-Data fetched at " + lastFetchTime);
         }
 
         return sunlightFactor;
@@ -62,7 +63,7 @@ public class WeatherAPI {
             // check for response status
             // 200 - means that the connection was a success
             if(apiConnection.getResponseCode() != 200){
-                System.out.println("Error: Could not connect to API");
+                logger.error("Could not connect to API");
                 sunlightFactor = 0.3;
             }
 
@@ -80,33 +81,27 @@ public class WeatherAPI {
             JSONObject sysArray = (JSONObject) jsonObject.get("sys");
 
             long sunrise = (long) sysArray.get("sunrise");
-            //System.out.println("Sunrise at (Unix): " + sunrise);
-
             long sunset = (long) sysArray.get("sunset");
-            //System.out.println("Sunset at (Unix): " + sunset);
+            logger.debug("Sunrise (Unix): " + sunrise + ", Sunset (Unix): " + sunsetTime);
 
             // Convert "Unix, UTC" time from API response to local time
             ZoneId viennaZone = ZoneId.of("Europe/Vienna");
             sunriseTime = Instant.ofEpochSecond(sunrise).atZone(viennaZone).toLocalTime();
             sunsetTime = Instant.ofEpochSecond(sunset).atZone(viennaZone).toLocalTime();
 
-            //System.out.println("Sunrise at: " + sunriseTime);
-            //System.out.println("Sunset at: " + sunsetTime);
-
             // Weather conditions
             JSONArray weatherArray = (JSONArray) jsonObject.get("weather");
             JSONObject firstWeather = (JSONObject) weatherArray.get(0);
 
             String weather = (String) firstWeather.get("main");
-            //System.out.println("Current Weather: " + weather);
+            logger.info("[i] Current weather: " + weather + ", sunrise at: " + sunriseTime + ", sunset at: " + sunsetTime);
 
             // Cloudiness (% of clouds) for more accurate cloud factor
             JSONObject cloudsObject = (JSONObject) jsonObject.get("clouds");
             long cloudIntensity = (long) cloudsObject.get("all");
 
             double cloudFactor = 1.0 - (cloudIntensity / 100.0);
-            //System.out.println("Cloudiness: " + cloudIntensity);
-            //System.out.println("Sunfactor (clouds): " + cloudFactor);
+            logger.debug("[i] Cloudiness: " + cloudIntensity + ", as sunFactor: " + cloudFactor + " %");
 
             // Theoretically the switch statement could be replaced by returning the cloudFactor
             sunlightFactor = switch (weather.toLowerCase()) {
@@ -117,7 +112,7 @@ public class WeatherAPI {
             };
 
         } catch(Exception e) {
-            e.printStackTrace();
+            logger.error("Error while fetching weather data", e);
             sunlightFactor = 0.3;
         }
     }
@@ -144,7 +139,7 @@ public class WeatherAPI {
 
         } catch (IOException e) {
             // Print the exception details in case of an IOException
-            e.printStackTrace();
+            logger.error("Error while reading API response", e);
         }
 
         // Return null if there was an issue reading the response
