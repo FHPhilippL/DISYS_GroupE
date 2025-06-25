@@ -144,7 +144,10 @@ public class GuiController {
             }
 
             lineChartUsage.getData().clear();
-            lineChartUsage.getData().addAll(producedSeries, usedSeries);
+            lineChartUsage.getData().add(producedSeries);
+            lineChartUsage.getData().add(usedSeries);
+            lineChartUsage.applyCss();
+            lineChartUsage.layout();
 
         } catch (IllegalArgumentException | IOException e) {
             ShowDataErrorText.setText("ERROR: " + e.getLocalizedMessage());
