@@ -5,6 +5,9 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.CategoryAxis?>
 <GridPane prefHeight="315.0" prefWidth="371.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.fhtw.bwi.disys.gui.GuiController">
 
     <padding>
@@ -70,6 +73,19 @@
          </font>
       </Label>
 
+       <LineChart fx:id="lineChartUsage" GridPane.columnSpan="2" GridPane.rowIndex="11"
+                  title="Community Usage (Hourly)"
+                  animated="false" legendVisible="true"
+                  prefHeight="200.0" prefWidth="350.0"
+                  createSymbols="false">
+           <xAxis>
+               <CategoryAxis label="Time"/>
+           </xAxis>
+           <yAxis>
+               <NumberAxis label="kWh"/>
+           </yAxis>
+       </LineChart>
 
    </children>
+
 </GridPane>
