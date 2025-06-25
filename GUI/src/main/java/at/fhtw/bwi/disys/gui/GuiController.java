@@ -62,7 +62,7 @@ public class GuiController {
                 while ((line = br.readLine()) != null) {
                     responseBuilder.append(line);
                 }
-                logger.info("Percentage received: {}", responseBuilder);
+                logger.info("Percentage Message received: {}", responseBuilder);
                 String jsonResponse = responseBuilder.toString();
                 ServerResponseCurrent response = gson.fromJson(jsonResponse, ServerResponseCurrent.class);
 
@@ -106,7 +106,7 @@ public class GuiController {
                 while ((line = br.readLine()) != null) {
                     responseBuilder.append(line);
                 }
-                logger.info("Data received for the time from {} {} o'clock till {} {} o'clock: {}",
+                logger.info("Data Message received for the time from {} {} o'clock till {} {} o'clock: {}",
                         startDate, startHour, endDate, endHour, responseBuilder);
 
 
