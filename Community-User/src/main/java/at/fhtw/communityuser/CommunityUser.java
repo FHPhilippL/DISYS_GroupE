@@ -4,13 +4,14 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadLocalRandom;
@@ -21,6 +22,7 @@ public class CommunityUser {
     private static final String QUEUE_NAME = "energy.input";
     private static final Random RANDOM = new Random();
     private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
+    private static final Logger logger = LoggerFactory.getLogger(CommunityUser.class);
 
     public static void main(String[] args) throws Exception {
 
@@ -34,7 +36,7 @@ public class CommunityUser {
 
             channel.queueDeclare(QUEUE_NAME, false, false, false, null);
 
-            System.out.println("[i] CommunityUserApp started.");
+            logger.info("[i] CommunityUserApp started.");
             scheduleNextMessage(channel);
             Thread.currentThread().join();
         }
@@ -52,9 +54,9 @@ public class CommunityUser {
                         kwh, LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
 
                 channel.basicPublish("", QUEUE_NAME, null, message.getBytes(StandardCharsets.UTF_8));
-                System.out.println("[x] Sent USER: " + message);
+                logger.info("Sent USER: " + message);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("Failed to send message", e);
             }
 
             // Schedule the next message AFTER this one completes
@@ -86,14 +88,14 @@ public class CommunityUser {
             timeOfDayFactor = 0.6; // Moderate usage
         }
 
-        //System.out.println("timeOfDayFactor (usage): " + timeOfDayFactor);
+        logger.debug("timeOfDayFactor: " + timeOfDayFactor);
 
         // Define base and range for user consumption
         double base = 0.002;     // base minimal usage
         double range = 0.004;    // max variability
 
         double kwh = base + (RANDOM.nextDouble() * range * timeOfDayFactor);
-        //System.out.println("User kWh usage: " + kwh);
+        logger.debug("User kWh usage: " + kwh);
 
         return Math.round(kwh * 1000.0) / 1000.0;
     }
