@@ -5,9 +5,12 @@ import com.google.gson.reflect.TypeToken;
 import com.rabbitmq.client.*;
 import com.rabbitmq.client.Connection;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeoutException;
 
 public class CurrentPercentageService {
 
@@ -27,8 +30,16 @@ public class CurrentPercentageService {
         factory.setUsername("guest");
         factory.setPassword("guest");
 
-        Connection mqConnection = factory.newConnection();
-        Channel channel = mqConnection.createChannel();
+        Channel channel = null;
+
+        try{
+            Connection mqConnection = factory.newConnection();
+            channel = mqConnection.createChannel();
+        } catch (IOException e) {
+            System.err.println("Could not connect to RabbitMQ");
+            e.printStackTrace();
+        }
+
 
         channel.queueDeclare(QUEUE_NAME, false, false, false, null);
         System.out.println("[i] Waiting for USAGE_UPDATED messages on queue '" + QUEUE_NAME + "'...");
