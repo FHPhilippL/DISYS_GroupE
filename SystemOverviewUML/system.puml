@@ -3,8 +3,10 @@ skinparam componentStyle rectangle
 skinparam linetype ortho
 
 ' Definition der Module als Komponenten
-component "Community Producer\n(Java Service)" as Producer #CCE5FF
 component "Community User\n(Java Service)" as User #CCE5FF
+component "Community Producer\n(Java Service)" as Producer #CCE5FF
+
+component "WeatherApi\n(external)" as Current #FFFFFF
 
 queue "RabbitMQ\nMessage Queue" as MQ 	#E0E0E0
 
@@ -17,6 +19,7 @@ component "Energy API\n(Spring Boot)" as API #FFFACD
 component "JavaFX GUI\n(Client)" as GUI #F0E68C
 
 ' Beziehungen / Nachrichtenfluss
+Current --> Producer : current Weather
 Producer ---> MQ : PRODUCER\n messages
 User ---> MQ : USER\n messages
 
