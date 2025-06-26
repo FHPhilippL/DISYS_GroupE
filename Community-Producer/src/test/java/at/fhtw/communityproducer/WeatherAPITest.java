@@ -1,19 +1,39 @@
 package at.fhtw.communityproducer;
 
-import junit.framework.TestCase;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class WeatherAPITest { // This class has only few methods (without user input) and therefore there is not much to test
+public class WeatherAPITest {
+
+    private WeatherAPI weatherAPI;
 
     @Test
     public void getSunlightFactorTest() {
-        //Assert
-        WeatherAPI weatherAPI = new WeatherAPI();
+        //Arrange & Act
         double sunlight = weatherAPI.getSunlightFactor();
 
-        //Assess
+        //Assert
         assertNotNull(sunlight);
     }
+
+    @Test
+    public void SunlightFactorInValidRangeTest() {
+        //Arrange & Act
+        double factor = weatherAPI.getSunlightFactor();
+
+        //Assert
+        assertTrue(factor >= 0.2 && factor <= 1.0);
+    }
+
+    @Test
+    public void CachingBehaviorTest() {
+        //Arrange & Act
+        double first = weatherAPI.getSunlightFactor();
+        double second = weatherAPI.getSunlightFactor(); // should not call API again
+
+        //Assert
+        assertEquals(first, second, 0.0001);
+    }
+
 }
