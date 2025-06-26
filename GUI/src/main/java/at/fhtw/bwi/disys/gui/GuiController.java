@@ -5,6 +5,8 @@ import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -38,6 +40,7 @@ public class GuiController {
     @FXML public LineChart<String, Number> lineChartUsage;
 
     private static final Gson gson = new Gson();
+    private static final Logger logger = LoggerFactory.getLogger(GuiController.class);
 
     /**
      * Called when the "Refresh" button is clicked.
@@ -46,6 +49,7 @@ public class GuiController {
      */
     @FXML
     protected void onRefreshButtonClick() {
+        logger.info("Refresh button clicked");
         try {
             String urlString = "http://localhost:8080/energy/current";
             final URLConnection connection = new URL(urlString).openConnection();
@@ -58,16 +62,18 @@ public class GuiController {
                 while ((line = br.readLine()) != null) {
                     responseBuilder.append(line);
                 }
-
+                logger.info("Percentage Message received: {}", responseBuilder);
                 String jsonResponse = responseBuilder.toString();
                 ServerResponseCurrent response = gson.fromJson(jsonResponse, ServerResponseCurrent.class);
 
                 CommunityPoolUsageText.setText(String.format("%.2f%% used", response.communityDepleted));
                 GridPortionPercentageText.setText(String.format("%.2f%% of total Usage", response.gridPortion));
                 refreshErrorText.setText("");
+                logger.info("Percentage is updated");
             }
         } catch (IOException e) {
             refreshErrorText.setText("ERROR: " + e.getLocalizedMessage());
+            logger.error(e.getLocalizedMessage());
         }
     }
 
@@ -79,6 +85,7 @@ public class GuiController {
      */
     @FXML
     protected void onShowDataButtonClick() {
+        logger.info("Show data button clicked");
         try {
             LocalDate startDate = StartTimeDatePicker.getValue();
             LocalDate endDate = EndTimeDatePicker.getValue();
@@ -99,6 +106,9 @@ public class GuiController {
                 while ((line = br.readLine()) != null) {
                     responseBuilder.append(line);
                 }
+                logger.info("Data Message received for the time from {} {} o'clock till {} {} o'clock: {}",
+                        startDate, startHour, endDate, endHour, responseBuilder);
+
 
                 String jsonResponse = responseBuilder.toString();
                 ServerResponseHistorical response = gson.fromJson(jsonResponse, ServerResponseHistorical.class);
@@ -107,6 +117,7 @@ public class GuiController {
                 CommunityUsedText.setText(String.format("%.3f kWh", response.totalCommunityUsed));
                 GridUsedText.setText(String.format("%.3f kWh", response.totalGridUsed));
                 ShowDataErrorText.setText("");
+                logger.info("Historical Data is updated");
             }
 
             // Fetch detailed hourly data
@@ -148,11 +159,14 @@ public class GuiController {
             lineChartUsage.getData().add(usedSeries);
             lineChartUsage.applyCss();
             lineChartUsage.layout();
+            logger.info("Line Chart is updated");
 
         } catch (IllegalArgumentException | IOException e) {
             ShowDataErrorText.setText("ERROR: " + e.getLocalizedMessage());
+            logger.error(e.getLocalizedMessage());
         } catch (DateTimeParseException e) {
             ShowDataErrorText.setText("ERROR: No Proper Date Chosen");
+            logger.error("No Proper Date Chosen");
         }
     }
 
