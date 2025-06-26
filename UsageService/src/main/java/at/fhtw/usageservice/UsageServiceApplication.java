@@ -16,19 +16,31 @@ import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+/**
+ * Entry point of the Usage Service.
+ *
+ * This service listens for energy usage and production events from RabbitMQ,
+ * aggregates and stores them into a PostgreSQL database, and sends update notifications
+ * when new hourly data is persisted.
+ */
 public class UsageServiceApplication {
 
     private static final Logger logger = LoggerFactory.getLogger(UsageServiceApplication.class);
 
+    // Queue names for incoming events and outgoing notifications
     private static final String INPUT_QUEUE = "energy.input";
     private static final String UPDATE_QUEUE = "energy.updated";
 
+    // Database connection credentials
     private static final String DB_URL = "jdbc:postgresql://localhost:5432/energy";
     private static final String DB_USER = "user";
     private static final String DB_PASS = "password";
 
+    /**
+     * Initializes the application and starts consuming messages from RabbitMQ.
+     */
     public static void main(String[] args) throws Exception {
-        // 1. RabbitMQ-Verbindung
+        // 1. Connect to RabbitMQ
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
         factory.setUsername("guest");
@@ -37,35 +49,37 @@ public class UsageServiceApplication {
         Connection rabbitConnection = factory.newConnection();
         Channel channel = rabbitConnection.createChannel();
 
+        // Declare the queues used by this service
         channel.queueDeclare(INPUT_QUEUE, false, false, false, null);
         channel.queueDeclare(UPDATE_QUEUE, false, false, false, null);
 
-        // 2. DataSource (einfache manuelle Konfiguration)
+        // 2. Set up database connection using a simple custom DataSource
         DataSource dataSource = new SimpleDataSource(DB_URL, DB_USER, DB_PASS);
 
-        // 3. Abhängigkeiten einbinden
+        // 3. Wire up service dependencies (repository, messenger, message handler)
         UsageRepository repository = new JdbcUsageRepository(dataSource);
         UsageMessenger messenger = new RabbitUsageMessenger(channel, UPDATE_QUEUE);
         UsageMessageHandler service = new UsageMessageHandler(repository, messenger);
 
         Gson gson = new Gson();
 
-        // 4. Nachrichtenkonsum starten
+        // 4. Start listening for incoming messages
         logger.info("Waiting for messages on '{}'", INPUT_QUEUE);
 
         DeliverCallback callback = (tag, delivery) -> {
             String json = new String(delivery.getBody(), StandardCharsets.UTF_8);
             try {
                 Map<String, Object> message = gson.fromJson(json, new TypeToken<Map<String, Object>>() {}.getType());
-                service.handleMessage(message);
+                service.handleMessage(message);  // Delegate processing to the business logic
             } catch (Exception e) {
                 logger.error("Failed to handle message", e);
             }
         };
 
+        // Start consuming messages continuously
         channel.basicConsume(INPUT_QUEUE, true, callback, tag -> {});
 
-        // Keep running
+        // Prevent the application from exiting
         Thread.currentThread().join();
     }
 }
