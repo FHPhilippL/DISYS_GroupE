@@ -52,24 +52,17 @@ public class GuiController {
         logger.info("Refresh button clicked");
         try {
             String urlString = "http://localhost:8080/energy/current";
-            final URLConnection connection = new URL(urlString).openConnection();
-            try (
-                    final InputStreamReader isr = new InputStreamReader(connection.getInputStream());
-                    final BufferedReader br = new BufferedReader(isr)
+            logger.info("Percentage URL: {}", urlString);
+            try (BufferedReader br = new BufferedReader(getReaderFromUrl(urlString))
             ) {
-                StringBuilder responseBuilder = new StringBuilder();
-                String line;
-                while ((line = br.readLine()) != null) {
-                    responseBuilder.append(line);
-                }
-                logger.info("Percentage Message received: {}", responseBuilder);
-                String jsonResponse = responseBuilder.toString();
+                String jsonResponse = br.readLine();
+                logger.info("Percentage Message received: {}", jsonResponse);
                 ServerResponseCurrent response = gson.fromJson(jsonResponse, ServerResponseCurrent.class);
 
                 CommunityPoolUsageText.setText(String.format("%.2f%% used", response.communityDepleted));
                 GridPortionPercentageText.setText(String.format("%.2f%% of total Usage", response.gridPortion));
                 refreshErrorText.setText("");
-                logger.info("Percentage is updated");
+                logger.info("Percentage is updated{}", String.format("%n"));
             }
         } catch (IOException e) {
             refreshErrorText.setText("ERROR: " + e.getLocalizedMessage());
@@ -100,17 +93,12 @@ public class GuiController {
 
             // Fetch total usage data
             String urlString = "http://localhost:8080/energy/historical?start=" + startStr + "&end=" + endStr;
+            logger.info("Historical Data URL: {}", urlString);
+
             try (BufferedReader br = new BufferedReader(getReaderFromUrl(urlString))) {
-                StringBuilder responseBuilder = new StringBuilder();
-                String line;
-                while ((line = br.readLine()) != null) {
-                    responseBuilder.append(line);
-                }
+                String jsonResponse = br.readLine();
                 logger.info("Data Message received for the time from {} {} o'clock till {} {} o'clock: {}",
-                        startDate, startHour, endDate, endHour, responseBuilder);
-
-
-                String jsonResponse = responseBuilder.toString();
+                        startDate, startHour, endDate, endHour, jsonResponse);
                 ServerResponseHistorical response = gson.fromJson(jsonResponse, ServerResponseHistorical.class);
 
                 CommunityProducedText.setText(String.format("%.3f kWh", response.totalCommunityProduced));
@@ -120,24 +108,21 @@ public class GuiController {
                 logger.info("Historical Data is updated");
             }
 
-            // Fetch detailed hourly data
+            // Fetch detailed hourly data for LineChart
             String detailedUrl = String.format("http://localhost:8080/energy/historical-detailed?start=%s&end=%s",
                     URLEncoder.encode(startStr, StandardCharsets.UTF_8),
                     URLEncoder.encode(endStr, StandardCharsets.UTF_8));
+            logger.info("Chart Data Received from: {}", detailedUrl);
 
-            HttpURLConnection conn = (HttpURLConnection) new URL(detailedUrl).openConnection();
-            conn.setRequestMethod("GET");
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            StringBuilder content = new StringBuilder();
             String inputLine;
-            while ((inputLine = in.readLine()) != null) {
-                content.append(inputLine);
+            try (BufferedReader br = new BufferedReader(getReaderFromUrl(detailedUrl))
+            ) {
+                inputLine = br.readLine();
             }
-            in.close();
-            conn.disconnect();
 
-            HourlyUsage[] usageData = gson.fromJson(content.toString(), HourlyUsage[].class);
+            HourlyUsage[] usageData = gson.fromJson(inputLine, HourlyUsage[].class);
+
 
             XYChart.Series<String, Number> producedSeries = new XYChart.Series<>();
             producedSeries.setName("Community Produced");
@@ -159,7 +144,7 @@ public class GuiController {
             lineChartUsage.getData().add(usedSeries);
             lineChartUsage.applyCss();
             lineChartUsage.layout();
-            logger.info("Line Chart is updated");
+            logger.info("Line Chart is updated{}", String.format("%n"));
 
         } catch (IllegalArgumentException | IOException e) {
             ShowDataErrorText.setText("ERROR: " + e.getLocalizedMessage());
