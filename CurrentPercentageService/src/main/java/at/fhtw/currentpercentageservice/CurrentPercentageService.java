@@ -26,6 +26,7 @@ public class CurrentPercentageService {
     private static final Gson gson = new Gson();
 
     public static void main(String[] args) throws Exception {
+        logger.info("[i] Current Percentage Service Started");
         PercentageCalculator calculator= new PercentageCalculator(DB_URL, DB_USER, DB_PASS);
 
         // RabbitMQ Setup

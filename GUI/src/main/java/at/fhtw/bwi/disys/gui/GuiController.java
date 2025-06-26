@@ -12,9 +12,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -109,9 +107,7 @@ public class GuiController {
             }
 
             // Fetch detailed hourly data for LineChart
-            String detailedUrl = String.format("http://localhost:8080/energy/historical-detailed?start=%s&end=%s",
-                    URLEncoder.encode(startStr, StandardCharsets.UTF_8),
-                    URLEncoder.encode(endStr, StandardCharsets.UTF_8));
+            String detailedUrl = "http://localhost:8080/energy/historical-detailed?start=" + startStr + "&end=" + endStr;
             logger.info("Chart Data Received from: {}", detailedUrl);
 
 
@@ -201,7 +197,6 @@ public class GuiController {
     // === Inner classes to hold JSON response data ===
 
     private static class ServerResponseCurrent {
-        String hour;
         double communityDepleted;
         double gridPortion;
     }
