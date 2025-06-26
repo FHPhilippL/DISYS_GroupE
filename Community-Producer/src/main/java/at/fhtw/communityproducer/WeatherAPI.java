@@ -82,12 +82,13 @@ public class WeatherAPI {
 
             long sunrise = (long) sysArray.get("sunrise");
             long sunset = (long) sysArray.get("sunset");
-            logger.debug("Sunrise (Unix): " + sunrise + ", Sunset (Unix): " + sunsetTime);
+            logger.debug("[i] Sunrise (Unix): " + sunrise + ", Sunset (Unix): " + sunset);
 
             // Convert "Unix, UTC" time from API response to local time
             ZoneId viennaZone = ZoneId.of("Europe/Vienna");
             sunriseTime = Instant.ofEpochSecond(sunrise).atZone(viennaZone).toLocalTime();
             sunsetTime = Instant.ofEpochSecond(sunset).atZone(viennaZone).toLocalTime();
+            logger.debug("[i] Sunrise: " + sunriseTime + ", Sunset: " + sunsetTime);
 
             // Weather conditions
             JSONArray weatherArray = (JSONArray) jsonObject.get("weather");
@@ -101,7 +102,7 @@ public class WeatherAPI {
             long cloudIntensity = (long) cloudsObject.get("all");
 
             double cloudFactor = 1.0 - (cloudIntensity / 100.0);
-            logger.debug("[i] Cloudiness: " + cloudIntensity + ", as sunFactor: " + cloudFactor + " %");
+            logger.debug("[i] Cloudiness: " + cloudIntensity + " %, as sunFactor: " + cloudFactor);
 
             // Theoretically the switch statement could be replaced by returning the cloudFactor
             sunlightFactor = switch (weather.toLowerCase()) {

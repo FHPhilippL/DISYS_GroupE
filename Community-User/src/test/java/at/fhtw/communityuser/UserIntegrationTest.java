@@ -51,7 +51,7 @@ public class UserIntegrationTest {
     @Test
     public void testMessageIsPublishedToQueue() throws Exception {
         double kwh = calculateKWh();
-        String msg = String.format(Locale.GERMAN,
+        String msg = String.format(java.util.Locale.US,
                 "{\"type\":\"USER\",\"association\":\"COMMUNITY\",\"kwh\":%.3f,\"datetime\":\"%s\"}",
                 kwh, LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
 
