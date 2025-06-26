@@ -1,6 +1,9 @@
 package at.fhtw.bwi.disys.gui;
 
 import javafx.application.Platform;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -51,7 +54,7 @@ class GuiControllerTest {
     }
 
     @Test
-    void assertThatWhenOnShowDataButtonIsClickedWhenASuccessfulResponseIsReceivedUpdateLabels() throws Exception{
+    void assertThatWhenOnShowDataButtonIsClickedWhenASuccessfulResponseIsReceivedUpdateLabels(){
         // Arrange
         GuiController guiController = Mockito.spy(new GuiController());
 
@@ -60,18 +63,14 @@ class GuiControllerTest {
         guiController.StartHourInput = new TextField("10");
         guiController.EndHourInput = new TextField("12");
 
+        CategoryAxis xAxis = new CategoryAxis();
+        NumberAxis yAxis = new NumberAxis();
+        guiController.lineChartUsage = new LineChart<>(xAxis, yAxis);
+
         guiController.CommunityProducedText = new Label();
         guiController.CommunityUsedText = new Label();
         guiController.GridUsedText = new Label();
         guiController.ShowDataErrorText = new Label();
-
-        String fakeJson = """
-            {
-                "totalCommunityProduced": 0.800,
-                "totalCommunityUsed": 0.900,
-                "totalGridUsed": 0.100
-            }
-        """;
 
         // Intercept URLConnection globally via URLStreamHandler
         URL.setURLStreamHandlerFactory(protocol -> {
@@ -85,7 +84,16 @@ class GuiControllerTest {
 
                             @Override
                             public InputStream getInputStream() {
-                                return new ByteArrayInputStream(fakeJson.getBytes());
+                                String path = url.toString();
+                                if (path.contains("historical-detailed")) {
+                                    String detailedJson = "[{\"hour\": \"2025-06-20T10:00:00\", \"communityProduced\": 0.6, \"communityUsed\": 0.7}]";
+                                    return new ByteArrayInputStream(detailedJson.getBytes());
+                                } else if(path.contains("historical")) {
+                                    String summaryJson = "{\"totalCommunityProduced\": 0.800, \"totalCommunityUsed\": 0.900, \"totalGridUsed\": 0.100}";
+                                    return new ByteArrayInputStream(summaryJson.getBytes());
+                                }else {
+                                    throw new IllegalArgumentException("Unexpected URL: " + path);
+                                }
                             }
                         };
                     }
@@ -102,6 +110,8 @@ class GuiControllerTest {
         assertEquals("0,900 kWh", guiController.CommunityUsedText.getText());
         assertEquals("0,100 kWh", guiController.GridUsedText.getText());
         assertEquals("", guiController.ShowDataErrorText.getText());
+
+        assertEquals(2, guiController.lineChartUsage.getData().size());
     }
 
     @Test
@@ -127,12 +137,12 @@ class GuiControllerTest {
         Exception n = assertThrows(IllegalArgumentException.class, () -> controller.checkHour(null));
 
         //Assert
-        assertEquals("Not a correct hour!", toHigh.getMessage());
-        assertEquals("Not a correct hour!", toLow.getMessage());
-        assertEquals("Hour must be a Number!", NaN.getMessage());
-        assertEquals("No Hour chosen!", empty.getMessage());
-        assertEquals("No Hour chosen!", blank.getMessage());
-        assertEquals("No Hour chosen!", n.getMessage());
+        assertEquals("Hour must be between 0 and 24.", toHigh.getMessage());
+        assertEquals("Hour must be between 0 and 24.", toLow.getMessage());
+        assertEquals("Hour must be a number.", NaN.getMessage());
+        assertEquals("No hour selected!", empty.getMessage());
+        assertEquals("No hour selected!", blank.getMessage());
+        assertEquals("No hour selected!", n.getMessage());
     }
 
     @Test
@@ -159,9 +169,9 @@ class GuiControllerTest {
         Exception nullEnd = assertThrows(IllegalArgumentException.class, () -> controller.checkDates(startDate, null));
 
         //Assert
-        assertEquals("Start Date is after End Date", before.getMessage());
-        assertEquals("Start Date not chosen", nullStart.getMessage());
-        assertEquals("End Date not chosen", nullEnd.getMessage());
+        assertEquals("Start date is after end date.", before.getMessage());
+        assertEquals("Start date not selected.", nullStart.getMessage());
+        assertEquals("End date not selected.", nullEnd.getMessage());
     }
 
 }
